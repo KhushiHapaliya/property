@@ -1,0 +1,129 @@
+/* Main header container */
+.header {
+    background-color: #003f3f;
+    padding: 15px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e0e0e0;
+    position: fixed; /* Fixed header */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Full width */
+    box-sizing: border-box;
+    height: 70px; /* Fixed height */
+}
+
+/* Content wrapper to avoid overlap with fixed header */
+.main-content {
+    margin-top: 80px; /* Space for header */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Header title styling */
+.header h4 {
+    font-size: 24px;
+    color: #ffffff;
+    margin: 0;
+    font-weight: 600;
+    margin-right: 30px;
+}
+
+/* Dropdown (Admin user button) */
+.header .dropdown-toggle {
+    background-color: #003f3f;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Profile image */
+.header img {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+/* Dropdown item styling */
+.dropdown-item {
+    font-size: 14px;
+    padding: 10px 16px;
+    color: #003f3f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Hover effect on items */
+.dropdown-item:hover {
+    background-color: #003f3f;
+    color: #ffffff;
+}
+
+/* Divider margin */
+.dropdown-divider {
+    margin: 8px 0;
+}
+
+/* ===================== */
+/* Responsive adjustments */
+/* ===================== */
+
+/* Tablets and below */
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 15px;
+        height: 60px; /* Adjust height for small screens */
+    }
+
+    .header h4 {
+        font-size: 20px; /* Smaller title */
+    }
+
+    .header .dropdown-toggle {
+        padding: 6px 10px;
+        font-size: 13px;
+        gap: 6px;
+    }
+
+    .header img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .main-content {
+        margin-top: 70px; /* Adjusted based on header height */
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .header h4 {
+        font-size: 18px; /* Even smaller title */
+    }
+
+    .header .dropdown-toggle span {
+        display: none; /* Hide text, show only image */
+    }
+}

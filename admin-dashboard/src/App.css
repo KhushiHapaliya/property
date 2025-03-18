@@ -1,0 +1,92 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* App layout styling */
+.content-wrapper {
+  transition: margin-left 0.3s;
+  padding: 20px;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px); /* Adjust based on your header height */
+}
+
+/* On desktop, add margin to content when sidebar is visible */
+@media (min-width: 992px) {
+  .content-wrapper {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+  }
+}
+
+/* On mobile, no margin for content */
+@media (max-width: 991.98px) {
+  .content-wrapper {
+    margin-left: 0;
+    width: 100%;
+    padding: 15px;
+  }
+}
+
+body {
+  background-color: #f8f9fa;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Add container constraints for better layout control */
+.container-fluid {
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+/* Header styling */
+header {
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}

@@ -1,0 +1,70 @@
+/* Container for My Appointments */
+.appointments-container {
+  padding: 20px;
+  margin-left: 250px; /* Ensure it starts after the sidebar */
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  transition: margin-left 0.3s ease; /* Smooth transition if sidebar toggles */
+}
+
+/* Title styling */
+.appointments-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Appointment cards layout */
+.appointment-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+  gap: 20px;
+  padding: 10px;
+}
+
+/* Individual card styling */
+.appointment-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Buttons */
+.appointment-card .btn {
+  margin-right: 8px;
+  margin-top: 10px;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+  margin-top: 10px;
+}
+
+.status-badge.accepted {
+  background-color: #28a745;
+}
+
+.status-badge.declined {
+  background-color: #dc3545;
+}
+
+.status-badge.pending {
+  background-color: #ffc107;
+  color: black;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+  .appointments-container {
+    margin-left: 0; /* Remove margin on mobile */
+    padding: 10px;
+  }
+}

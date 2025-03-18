@@ -1,0 +1,367 @@
+/* General container padding */
+.container {
+    padding: 20px;
+  }
+  
+  /* Card for Add User form */
+  .card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  /* Form controls styling */
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Invalid input */
+  .form-control.is-invalid {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+  }
+  
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 12px;
+  }
+  
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+  }
+  
+  /* Table styling */
+  .table {
+    margin-top: 20px;
+    background: #fff;
+  }
+  
+  .table th {
+    background: #004d40;
+    color: white;
+    text-align: center;
+    margin-left: 60px;
+    margin-right: 50px;
+  }
+  
+  .table td {
+    vertical-align: middle;
+    text-align: center;
+  }
+  
+  .table td,
+  .table th {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  
+  /* Modal */
+  .modal-content {
+    border-radius: 8px;
+  }
+  
+  .modal-header {
+    background: #004d40;
+    color: white;
+    border-bottom: none;
+    padding: 15px;
+  }
+  
+  .modal-body {
+    padding: 15px;
+  }
+  
+  .modal-footer {
+    padding: 15px;
+    border-top: none;
+  }
+  /* Profile image inside the modal */
+  .modal-body img {
+  width: 120px; /* Set desired width */
+  height: 120px; /* Set desired height */
+  object-fit: cover; /* Keeps aspect ratio and covers the box */
+  border-radius: 8px; /* Optional: for rounded corners */
+  display: block;
+  margin: 10px auto; /* Center the image horizontally */
+  border: 2px solid #ddd; /* Optional: Add border */
+}
+
+  /* Custom Buttons */
+  .btn-success {
+    background: #28a745;
+    border: none;
+  }
+  
+  .btn-warning {
+    background: #ffc107;
+    border: none;
+  }
+  
+  .btn-danger {
+    background: #dc3545;
+    border: none;
+  }
+  
+  .btn-primary {
+    background: #003f3f;
+    border: none;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    border: none;
+  }
+  
+  /* Hover Effects */
+  .btn-success:hover {
+    background: #218838;
+  }
+  
+  .btn-warning:hover {
+    background: #e0a800;
+  }
+  
+  .btn-danger:hover {
+    background: #c82333;
+  }
+  
+  .btn-primary:hover {
+    background: #003f3f;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+  
+  /* Add some spacing to the add user button */
+  .btn-success.mt-2 {
+    margin-top: 10px;
+  }
+  
+  /* Add sidebar gap */
+  .container {
+    margin-left: 250px; /* Adjust based on your sidebar width */
+  }
+  
+  /* Modal Close Button */
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: white;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container {
+      margin-left: 0;
+      padding: 10px;
+    }
+  
+    .table th,
+    .table td {
+      font-size: 0.9rem;
+      padding: 8px;
+    }
+  }
+  /* Add these styles to your user.css file */
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.img-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Table container */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  min-width: 100%;
+}
+
+/* Custom table styles */
+.custom-table {
+  width: 100%;
+  min-width: 750px; /* Ensure table doesn't collapse too much */
+  border-collapse: collapse;
+}
+
+.custom-table thead tr {
+  background-color: #f8f9fa;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Force table to be table (override Bootstrap responsive table) */
+.custom-table,
+.custom-table thead,
+.custom-table tbody,
+.custom-table th,
+.custom-table td,
+.custom-table tr {
+  display: table !important;
+}
+
+.custom-table {
+  display: table !important;
+  width: 100% !important;
+}
+
+.custom-table thead {
+  display: table-header-group !important;
+}
+
+.custom-table tbody {
+  display: table-row-group !important;
+}
+
+.custom-table tr {
+  display: table-row !important;
+}
+
+.custom-table th,
+.custom-table td {
+  display: table-cell !important;
+}
+
+/* Ensure horizontal scrolling works */
+@media (max-width: 767px) {
+  .card-body {
+    padding: 0 !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  
+  /* Make sure the table doesn't transform */
+  .custom-table {
+    margin-bottom: 0;
+    width: 100%;
+  }
+}
+/* Custom button */
+.custom-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.custom-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Small button */
+.custom-btn-sm {
+  padding: 4px 10px;
+  background-color: #003f3f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.custom-btn-sm:hover {
+  background-color: #5a6268;
+}
+
+/* Danger button for delete */
+.danger-btn {
+  background-color: #dc3545;
+  color: white;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background-color: #c82333;
+}
+/* Add User button (Green) */
+.custom-btn {
+  background-color: green;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.custom-btn:hover {
+  background-color: darkgreen;
+}
+
+/* Edit button (Blue) */
+.custom-btn-sm {
+  padding: 4px 10px;
+  background-color: blue;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.custom-btn-sm:hover {
+  background-color: darkblue;
+}
+
+/* Delete button (Red) */
+.danger-btn {
+  background-color: red;
+  color: white;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background-color: darkred;
+}

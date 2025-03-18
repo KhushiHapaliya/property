@@ -1,0 +1,112 @@
+.deals-container {
+    padding: 30px 50px; /* Padding to avoid sidebar overlap */
+    margin-left: 220px; /* Adjust according to your sidebar width */
+    box-sizing: border-box;
+  }
+  
+  .deals-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+  
+  .deal-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #367474;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .deals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  .deal-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .deal-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .card-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .status-badge.active { color: white; font-weight: bold; }
+  .status-badge.closed { color: red; font-weight: bold; }
+  
+  .status-toggle-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  .active-btn {
+    background: green;
+  }
+  
+  .inactive-btn {
+    background: orange;
+  }
+  
+  .delete-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: red;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .cancel-btn {
+    background: #ccc;
+    color: #000;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  

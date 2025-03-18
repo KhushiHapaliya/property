@@ -1,0 +1,147 @@
+/* properties.css */
+
+/* Main container styling */
+.container {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+/* Heading */
+h1 {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Table Styles */
+.table-responsive {
+  margin-top: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 12px;
+}
+
+.table th {
+  background-color: #003f3f;
+  color: #fff;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Image Styling */
+.table img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Button Styling */
+.btn {
+  min-width: 60px;
+  border-radius: 20px;
+  padding: 5px 12px;
+}
+
+.btn-primary {
+  background-color: #236464;
+  border: none;
+}
+
+.btn-success {
+  background-color: #236464;
+  width: 15%;
+  border: none;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+  color: black;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+/* Modal Styles */
+.modal-content {
+  border-radius: 10px;
+}
+
+.modal-header {
+  background-color: #003f3f;
+  color: white;
+  border-bottom: none;
+}
+
+.modal-title {
+  font-weight: bold;
+}
+
+.modal-body input,
+.modal-body textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
+
+/* Error Message */
+.text-danger {
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* Image Preview */
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .btn {
+    margin-bottom: 5px;
+  }
+
+  .modal-dialog {
+    max-width: 95%;
+    margin: 1rem auto;
+  }
+}

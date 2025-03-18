@@ -1,0 +1,259 @@
+/* Dashboard grid layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
+  max-width: 1400px;
+}
+
+/* Individual card styling */
+.custom-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 180px;
+}
+
+/* Hover effect */
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon styling */
+.card-icon {
+  font-size: 36px;
+  height: 70px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+}
+
+/* Text styling */
+.custom-card h2 {
+  margin: 10px 0 5px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.custom-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Color-specific styling */
+.text-primary {
+  color: #0d6efd;
+}
+
+.text-success {
+  color: #198754;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+.text-info {
+  color: #0dcaf0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 1600px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 991px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .custom-card {
+    padding: 20px;
+    min-height: 160px;
+  }
+  
+  .card-icon {
+    height: 60px;
+    width: 60px;
+    font-size: 28px;
+  }
+  
+  .custom-card h2 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .custom-card {
+    padding: 16px;
+    min-height: 140px;
+  }
+  
+  .card-icon {
+    height: 50px;
+    width: 50px;
+    font-size: 24px;
+  }
+  
+  .custom-card h2 {
+    font-size: 22px;
+  }
+  
+  .custom-card p {
+    font-size: 14px;
+  }
+}
+/* Add these styles to your DashboardCards.css file */
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  .table-responsive table {
+    width: 100%;
+    min-width: 500px; /* Ensures table doesn't collapse too much */
+  }
+  
+  .responsive-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+}
+
+/* Add these CSS rules to your DashboardCards.css file */
+
+.properties-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.properties-table th,
+.properties-table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Add these styles to your DashboardCards.css file */
+
+/* Table container */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  min-width: 100%;
+}
+
+/* Custom table styles */
+.custom-table {
+  width: 100%;
+  min-width: 650px; /* Ensures table doesn't collapse too much */
+  border-collapse: collapse;
+}
+
+.custom-table thead tr {
+  background-color: #f8f9fa;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Force table to be table (override Bootstrap responsive table) */
+.custom-table,
+.custom-table thead,
+.custom-table tbody,
+.custom-table th,
+.custom-table td,
+.custom-table tr {
+  display: table !important;
+}
+
+.custom-table {
+  display: table !important;
+  width: 100% !important;
+}
+
+.custom-table thead {
+  display: table-header-group !important;
+}
+
+.custom-table tbody {
+  display: table-row-group !important;
+}
+
+.custom-table tr {
+  display: table-row !important;
+}
+
+.custom-table th,
+.custom-table td {
+  display: table-cell !important;
+}
+
+/* Prevent Bootstrap's responsive table behavior */
+@media (max-width: 767px) {
+  .card-body {
+    padding: 0 !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  
+  /* Make sure the table doesn't transform */
+  .custom-table {
+    margin-bottom: 0;
+    width: 100%;
+    min-width: 650px;
+  }
+  
+  /* Ensure horizontal scrolling works */
+  .custom-table th,
+  .custom-table td {
+    white-space: nowrap;
+  }
+}
