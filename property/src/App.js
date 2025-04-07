@@ -22,6 +22,7 @@ import Signup from "./components/Signup";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import ChangePass from "./components/ChangePass";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   return (
@@ -53,6 +54,8 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/change-password" element={<ChangePass />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+
       </Routes>
       <Footer />
     </>

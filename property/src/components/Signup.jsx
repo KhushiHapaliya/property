@@ -1,25 +1,28 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import "./Style.css"; // Ensure styles are included
+import "./Style.css";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     role: "",
-    firstName: "",
-    lastName: "",
+    first_nm: "",
+    last_nm: "",
     address: "",
     city: "",
     state: "",
     email: "",
-    phone: "",
+    mobile: "",
     password: "",
     confirmPassword: "",
-    photo: null,
+    profilePic: null,
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     let newErrors = {};
@@ -27,8 +30,8 @@ const Signup = () => {
     const phonePattern = /^[0-9]{10}$/;
 
     if (!formData.role) newErrors.role = "Role is required";
-    if (!formData.firstName.trim()) newErrors.firstName = "First Name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last Name is required";
+    if (!formData.first_nm.trim()) newErrors.first_nm = "First Name is required";
+    if (!formData.last_nm.trim()) newErrors.last_nm = "Last Name is required";
     if (!formData.address.trim()) newErrors.address = "Address is required";
     if (!formData.city.trim()) newErrors.city = "City is required";
     if (!formData.state.trim()) newErrors.state = "State is required";
@@ -39,10 +42,10 @@ const Signup = () => {
       newErrors.email = "Invalid email format";
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    } else if (!phonePattern.test(formData.phone)) {
-      newErrors.phone = "Phone number must be 10 digits";
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = "Phone number is required";
+    } else if (!phonePattern.test(formData.mobile)) {
+      newErrors.mobile = "Phone number must be 10 digits";
     }
 
     if (!formData.password) {
@@ -65,7 +68,7 @@ const Signup = () => {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    if (!formData.photo) newErrors.photo = "Profile photo is required";
+    if (!formData.profilePic) newErrors.profilePic = "Profile photo is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -77,14 +80,46 @@ const Signup = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, photo: e.target.files[0] });
-    setErrors({ ...errors, photo: "" });
+    setFormData({ ...formData, profilePic: e.target.files[0] });
+    setErrors({ ...errors, profilePic: "" });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      alert("Signup successful");
+      setLoading(true);
+      
+      try {
+        // Create FormData object for file upload
+        const userData = new FormData();
+        
+        // Add all form fields to FormData
+        Object.keys(formData).forEach(key => {
+          if (key !== 'confirmPassword') { // Don't send confirmPassword to backend
+            if (key === 'profilePic' && formData[key]) {
+              userData.append(key, formData[key]);
+            } else {
+              userData.append(key, formData[key]);
+            }
+          }
+        });
+        
+        // Make API call to your backend endpoint
+        const response = await axios.post("http://localhost:5000/api/User/add-user", userData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        alert("Signup successful!");
+        navigate('/login'); // Redirect to login page after successful signup
+      } catch (error) {
+        console.error("Signup error:", error);
+        const errorMessage = error.response?.data?.error || "An error occurred during signup";
+        alert(`Signup failed: ${errorMessage}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -95,11 +130,10 @@ const Signup = () => {
           <div className="col-lg-6 col-md-8 col-sm-10">
             <div className="card shadow p-4">
               <h2 className="text-center" style={{ color: "#003f3f" }}>Sign Up</h2>
-              <form onSubmit={handleSubmit} className="row g-3">
+              <form onSubmit={handleSubmit} className="row g-3" encType="multipart/form-data">
                 
                 {/* Role Dropdown */}
                 <div className="col-md-12">
-                  {/* <label className="form-label" style={{ color: "#003f3f" }}>Role:</label> */}
                   <select   
                     className={`form-select ${errors.role ? "is-invalid" : ""}`} 
                     name="role" 
@@ -107,50 +141,155 @@ const Signup = () => {
                     onChange={handleChange} 
                   >
                     <option value="">Select Role</option>
-                    <option value="User">User</option>
-                    <option value="Agent">Agent</option>
-                    <option value="Admin">Admin</option>
+                    <option value="user">User</option>
+                    <option value="agent">Agent</option>
+                    <option value="admin">Admin</option>
                   </select>
                   {errors.role && <small className="text-danger">{errors.role}</small>}
                 </div>
 
-                {/* Other Input Fields */}
-                {[
-                  { name: "firstName", placeholder: "First Name" },
-                  { name: "lastName", placeholder: "Last Name" },
-                  { name: "address", placeholder: "Address" },
-                  { name: "city", placeholder: "City" },
-                  { name: "state", placeholder: "State" },
-                  { name: "email", placeholder: "Email", type: "email" },
-                  { name: "phone", placeholder: "Phone Number", type: "tel" },
-                  { name: "password", placeholder: "Password", type: "password" },
-                  { name: "confirmPassword", placeholder: "Confirm Password", type: "password" },
-                ].map((field, index) => (
-                  <div className={`col-md-${field.name === "address" ? 12 : 6}`} key={index}>
-                    <input
-                      type={field.type || "text"}
-                      name={field.name}
-                      className="form-control"
-                      placeholder={field.placeholder}
-                      value={formData[field.name]}
-                      onChange={handleChange}
-                      style={{ color: "#003f3f" }}
-                    />
-                    {errors[field.name] && <small className="text-danger">{errors[field.name]}</small>}
-                  </div>
-                ))}
+                {/* Name fields */}
+                <div className="col-md-6">
+                  <input
+                    type="text"
+                    name="first_nm"
+                    className="form-control"
+                    placeholder="First Name"
+                    value={formData.first_nm}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.first_nm && <small className="text-danger">{errors.first_nm}</small>}
+                </div>
+                
+                <div className="col-md-6">
+                  <input
+                    type="text"
+                    name="last_nm"
+                    className="form-control"
+                    placeholder="Last Name"
+                    value={formData.last_nm}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.last_nm && <small className="text-danger">{errors.last_nm}</small>}
+                </div>
+
+                {/* Address fields */}
+                <div className="col-md-12">
+                  <input
+                    type="text"
+                    name="address"
+                    className="form-control"
+                    placeholder="Address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.address && <small className="text-danger">{errors.address}</small>}
+                </div>
+                
+                <div className="col-md-6">
+                  <input
+                    type="text"
+                    name="city"
+                    className="form-control"
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.city && <small className="text-danger">{errors.city}</small>}
+                </div>
+                
+                <div className="col-md-6">
+                  <input
+                    type="text"
+                    name="state"
+                    className="form-control"
+                    placeholder="State"
+                    value={formData.state}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.state && <small className="text-danger">{errors.state}</small>}
+                </div>
+
+                {/* Contact and password fields */}
+                <div className="col-md-6">
+                  <input
+                    type="email"
+                    name="email"
+                    className="form-control"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.email && <small className="text-danger">{errors.email}</small>}
+                </div>
+                
+                <div className="col-md-6">
+                  <input
+                    type="tel"
+                    name="mobile"
+                    className="form-control"
+                    placeholder="Phone Number"
+                    value={formData.mobile}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.mobile && <small className="text-danger">{errors.mobile}</small>}
+                </div>
+                
+                <div className="col-md-6">
+                  <input
+                    type="password"
+                    name="password"
+                    className="form-control"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.password && <small className="text-danger">{errors.password}</small>}
+                </div>
+                
+                <div className="col-md-6">
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    className="form-control"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    style={{ color: "#003f3f" }}
+                  />
+                  {errors.confirmPassword && <small className="text-danger">{errors.confirmPassword}</small>}
+                </div>
 
                 {/* File Upload */}
                 <div className="col-md-12">
                   <label className="form-label">Upload Profile Photo</label>
-                  <input type="file" name="photo" className="form-control" accept="image/*" onChange={handleFileChange} />
-                  {errors.photo && <small className="text-danger">{errors.photo}</small>}
+                  <input 
+                    type="file" 
+                    name="profilePic" 
+                    className="form-control" 
+                    accept="image/*" 
+                    onChange={handleFileChange} 
+                  />
+                  {errors.profilePic && <small className="text-danger">{errors.profilePic}</small>}
                 </div>
 
                 {/* Submit Button */}
                 <div className="col-12 text-center">
-                  <button type="submit" className="btn w-100" style={{ backgroundColor: "#003f3f", color: "white" }}>
-                    Sign Up
+                  <button 
+                    type="submit" 
+                    className="btn w-100" 
+                    style={{ backgroundColor: "#003f3f", color: "white" }}
+                    disabled={loading}
+                  >
+                    {loading ? "Processing..." : "Sign Up"}
                   </button>
                 </div>
               </form>
@@ -159,7 +298,6 @@ const Signup = () => {
               <p className="text-center mt-3">
                 Already have an account? <Link to="/login" className="text-primary">Login</Link>
               </p>
-
             </div>
           </div>
         </div>

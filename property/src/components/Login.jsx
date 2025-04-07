@@ -1,22 +1,32 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css"; // Ensure Bootstrap is included
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login = () => {
-  const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusType, setStatusType] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get("status");
+    const message = params.get("message");
+    
+    if (status && message) {
+      setStatusType(status);
+      setStatusMessage(message);
+    }
+  }, [location]);
 
   const validateForm = () => {
     let isValid = true;
     let newErrors = {};
-
-    if (!role) {
-      newErrors.role = "Please select a role.";
-      isValid = false;
-    }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
@@ -27,12 +37,8 @@ const Login = () => {
       isValid = false;
     }
 
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     if (!password.trim()) {
       newErrors.password = "Password is required.";
-      isValid = false;
-    } else if (!passwordPattern.test(password)) {
-      newErrors.password = "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character.";
       isValid = false;
     }
 
@@ -40,11 +46,38 @@ const Login = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Login with:", { role, email, password });
-      navigate("/profile");
+      setLoading(true);
+      
+      try {
+        const { data } = await axios.post("http://localhost:5000/api/User/login", {
+          email,
+          password,
+        });
+
+        localStorage.setItem(`${data.user.role}token`, data.token);
+        localStorage.setItem(data.user.role, JSON.stringify(data.user));
+
+        setStatusMessage(data.message);
+        setStatusType(data.status);
+
+        setTimeout(() => {
+          if (data.user.role === "admin") {
+            navigate("../admin-dashboard");
+          } else if (data.user.role === "user") {
+            navigate("/");
+          } else if (data.user.role === "agent") {
+            navigate("/agent-panel");
+          }
+        }, 2000);
+      } catch (error) {
+        setStatusMessage(error.response?.data?.message || "Invalid credentials. Please try again!");
+        setStatusType(error.response?.data?.status || "error");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -52,22 +85,14 @@ const Login = () => {
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
       <div className="card shadow p-4" style={{ maxWidth: "400px", width: "100%" }}>
         <h2 className="text-center" style={{ color: "#003f3f" }}>Login</h2>
-        <form onSubmit={handleSubmit} className="row g-3">
-          <div className="col-md-12">
-            <label className="form-label" style={{ color: "#003f3f" }}>Role:</label>
-            <select 
-              className={`form-select ${errors.role ? "is-invalid" : ""}`} 
-              value={role} 
-              onChange={(e) => setRole(e.target.value)}
-              style={{ color: "#003f3f" }}
-            >
-              <option value="">Select Role</option>
-              <option value="User">User</option>
-              <option value="Agent">Agent</option>
-              <option value="Admin">Admin</option>
-            </select>
-            {errors.role && <div className="text-danger">{errors.role}</div>}
+        
+        {statusMessage && (
+          <div className={`alert alert-${statusType === "success" ? "success" : "danger"} mb-3`}>
+            {statusMessage}
           </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="row g-3">
           <div className="col-md-12">
             <label className="form-label" style={{ color: "#003f3f" }}>Email:</label>
             <input 
@@ -97,9 +122,10 @@ const Login = () => {
             <button 
               type="submit" 
               className="btn w-100" 
-              style={{ backgroundColor: "#003f3f", color: "white" }} 
+              style={{ backgroundColor: "#003f3f", color: "white" }}
+              disabled={loading}
             >
-              Login
+              {loading ? "Processing..." : "Login"}
             </button>
           </div>
         </form>

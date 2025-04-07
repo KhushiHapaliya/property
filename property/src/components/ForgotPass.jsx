@@ -1,68 +1,94 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css"; 
+import { Link } from "react-router-dom";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const ForgotPass = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const validateForm = () => {
-    let isValid = true;
-    let newErrors = {};
-    
+  const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      newErrors.email = "Email is required.";
-      isValid = false;
-    } else if (!emailPattern.test(email)) {
-      newErrors.email = "Enter a valid email address.";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
+    return emailPattern.test(email);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log("Password reset link sent to:", email);
-      navigate("/login");
+    setError("");
+    
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const response = await axios.post("http://localhost:5000/api/User/forgot-password", { email });
+      setMessage(response.data.message);
+      setStatus("success");
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to process request. Please try again.");
+      setStatus("error");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
       <div className="card shadow p-4" style={{ maxWidth: "400px", width: "100%" }}>
-        <h2 className="text-center">Forgot Password</h2>
-        <form onSubmit={handleSubmit} className="row g-3">
-          <div className="col-md-12">
-            <label className="form-label">Email:</label>
-            <input 
-              type="text" 
-              className={`form-control ${errors.email ? "is-invalid" : ""}`} 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-            />
-            {errors.email && <div className="text-danger">{errors.email}</div>}
+        <h2 className="text-center mb-4" style={{ color: "#003f3f" }}>Forgot Password</h2>
+        
+        {message && (
+          <div className={`alert alert-${status === "success" ? "success" : "danger"} mb-3`}>
+            {message}
           </div>
-          <div className="col-12 text-center">
+        )}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label" style={{ color: "#003f3f" }}>
+              Enter your email address
+            </label>
+            <input
+              type="email"
+              className={`form-control ${error ? "is-invalid" : ""}`}
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              style={{ color: "#003f3f" }}
+            />
+            {error && <div className="invalid-feedback">{error}</div>}
+          </div>
+          
+          <div className="d-grid gap-2">
             <button 
               type="submit" 
-              className="btn w-100" 
-              style={{ backgroundColor: "#003f3f", color: "white" }} 
+              className="btn" 
+              style={{ backgroundColor: "#003f3f", color: "white" }}
+              disabled={loading}
             >
-              Reset Password
+              {loading ? "Processing..." : "Reset Password"}
             </button>
           </div>
         </form>
+        
         <p className="text-center mt-3">
-          Remembered your password? <a href="/login" className="text-primary">Login</a>
+          Remember your password? <Link to="/login" className="text-primary">Back to Login</Link>
         </p>
       </div>
     </div>
   );
 };
 
-export default ForgotPass;
+export default ForgotPassword;
