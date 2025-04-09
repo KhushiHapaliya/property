@@ -1,267 +1,54 @@
-/* agent.css */
+/* Agent Component Styles */
 
-/* General Page Styles */
-body {
-  background-color: #f8f9fa;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 20px;
+/* Make sure modals display properly */
+.modal.show.fade.d-block {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-h2 {
-  font-weight: 600;
-  margin-bottom: 30px;
-  color: #333;
-  text-align: center;
+/* Make sure the image preview isn't too large */
+.modal-body img.img-fluid {
+  max-height: 300px;
+  object-fit: contain;
 }
 
-/* Add Agent Button */
-.btn-success {
-  background-color: #28a745;
-  border: none;
-  padding: 10px 20px;
-  font-weight: 500;
-  border-radius: 10px;
-  transition: background-color 0.3s ease;
-  margin-bottom: 10px;
+/* Make agent cards look nicer */
+.agent-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 1rem;
 }
 
-.btn-success:hover {
-  background-color: #218838;
-  color: white;
-}
-
-/* Agent Card */
-.card {
-  border: none;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 25px;
-}
-
-.card:hover {
+.agent-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.card img {
-  height: 250px;
-  object-fit: cover;
-  width: 100%;
+/* Improve table responsiveness */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.card-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 10px;
+/* Style for the agent picture in the table */
+.table img.rounded-circle {
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.card-text {
-  font-size: 0.95rem;
-  color: #555;
-  line-height: 1.5;
+/* Add some spacing to the form elements */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
 }
 
-.card-footer {
-  background: #f8f9fa;
-  border-top: none;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* Buttons inside Card */
-.card-footer .btn {
-  width: 48%;
-  font-size: 0.9rem;
-  border-radius: 8px;
-}
-
-.btn-warning {
-  background-color: #ffc107;
-  border: none;
-}
-
-.btn-warning:hover {
-  background-color: #e0a800;
-  color: white;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border: none;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-  color: white;
-}
-
-/* Modal Styles */
-.modal {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal-dialog {
-  max-width: 600px;
-  margin: 5% auto;
-}
-
-.modal-content {
-  border-radius: 15px;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  animation: modalFade 0.4s ease;
-}
-
-.modal-header {
-  border-bottom: none;
-  background: #004d40;
-  color: white;
-  padding: 15px 20px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-}
-
-.modal-title {
+/* Make the add button stand out */
+.btn-success {
   font-weight: 500;
 }
 
-.modal-header .btn-close {
-  background: white;
-  opacity: 1;
-}
-
-.modal-body {
-  padding: 20px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-/* Form Fields */
-.modal-body input {
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  width: 100%;
-}
-
-/* Modal Footer */
-.modal-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 20px;
-  border-top: none;
-}
-
-.modal-footer .btn-primary {
-  background-color: #007bff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-.modal-footer .btn-primary:hover {
-  background-color: #0069d9;
-}
-
-.modal-footer .btn-secondary {
-  background-color: #6c757d;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-}
-
-/* Error Messages */
-.text-danger {
-  font-size: 0.85rem;
-  margin-top: -8px;
-  margin-bottom: 8px;
-}
-
-/* Image Preview */
-.img-fluid {
-  display: block;
-  max-width: 150px;
-  height: auto;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
-/* Smooth Modal Animation */
-@keyframes modalFade {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Scrollbar */
-.modal-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-/* Table Styling */
-.table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.table th,
-.table td {
-  padding: 12px 15px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-
-.table th {
-  background: #003f3f;
-  color: white;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-}
-
-.table tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
-.table img {
-  height: 60px;
-  width: 60px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #ddd;
-}
-
-/* Responsive adjustments for buttons and container */
+/* Style for responsive action buttons */
 @media (max-width: 768px) {
-  .btn {
-    margin-bottom: 10px;
-  }
-  .container-fluid {
-    padding-left: 10px;
-    padding-right: 10px;
+  .btn-sm {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.7rem;
   }
 }

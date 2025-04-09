@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap
 import agent1 from "./images/agent1.jpg";
 
-const Profile = () => {
+const Profiles = () => {
   const navigate = useNavigate(); // React Router navigation hook
 
   const [user, setUser] = useState({
@@ -87,4 +87,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Profiles;

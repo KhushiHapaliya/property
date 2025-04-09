@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
-
-// Importing route files
 const userRoutes = require("./userRoutes"); // User-related routes
-// const contactRoutes = require("./contactRoutes"); // Contact inquiries
+const propertyRoutes = require("./propertyRoutes"); // Property-related routes
+const appointmentRoutes = require("./appointmentRoutes"); // Appointment routes
+const agentRoutes = require("./agentRoutes"); // Agent routes
 
 // Use the routes
-router.use("/User", userRoutes);
-// router.use("/contacts", contactRoutes);
+router.use("/user", userRoutes);
+router.use("/properties", propertyRoutes); // Property routes with /api/properties prefix
+router.use("/appointments", appointmentRoutes); // Appointment routes with /api/appointments prefix
+router.use("/agents", agentRoutes); // Agent routes with /api/agents prefix
 
 // Handle 404 errors for unknown routes
 router.use((req, res) => {

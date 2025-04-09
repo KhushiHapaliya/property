@@ -57,25 +57,40 @@ const Login = () => {
           password,
         });
 
-        localStorage.setItem(`${data.user.role}token`, data.token);
-        localStorage.setItem(data.user.role, JSON.stringify(data.user));
+        // Store token and user data
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userRole", data.user.role);
+        localStorage.setItem("userData", JSON.stringify(data.user));
 
         setStatusMessage(data.message);
         setStatusType(data.status);
 
+        // Log the redirection attempt for debugging
+        console.log(`Redirecting user with role: ${data.user.role}`);
+
         setTimeout(() => {
+          // Determine the base URL for your applications
+          const baseUrl = window.location.origin; // e.g., http://localhost:5173
+          
           if (data.user.role === "admin") {
-            navigate("../admin-dashboard");
-          } else if (data.user.role === "user") {
-            navigate("/");
+            // Redirect to admin dashboard application
+            window.location.href = "http://localhost:3000/admin-dashboard/";
           } else if (data.user.role === "agent") {
-            navigate("/agent-panel");
+            // Redirect to agent panel application
+            window.location.href = "http://localhost:3000/agent-panel/";
+          } else if (data.user.role === "user") {
+            // Stay in the property application
+            navigate("/");
           }
-        }, 2000);
+        }, 1000);
+
       } catch (error) {
-        setStatusMessage(error.response?.data?.message || "Invalid credentials. Please try again!");
-        setStatusType(error.response?.data?.status || "error");
-      } finally {
+        console.error("Login error:", error);
+        setStatusType("error");
+        setStatusMessage(
+          error.response?.data?.message || 
+          "Failed to login. Please check your credentials."
+        );
         setLoading(false);
       }
     }

@@ -12,6 +12,8 @@ import Appointment from './components/appointment';
 import AboutUs from './components/aboutus';
 import ContactUs from './components/contactus';
 import Profile from './components/profile';
+import PropertyDetails from './components/profile';
+
 
 function App() {
   return (
@@ -33,6 +35,7 @@ function App() {
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/contactus" element={<ContactUs />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/property-details" element={<PropertyDetails />} />
               {/* Catch all route - redirect to dashboard if route doesn't exist */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
