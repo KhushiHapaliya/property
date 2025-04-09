@@ -1,80 +1,143 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./agent.css";
 
 const Agents = () => {
-  const [agents, setAgents] = useState([
-    {
-      id: 1,
-      name: "David Johnson",
-      phone: "123-456-7890",
-      email: "david.johnson@example.com",
-      propertiesSold: 20,
-      propertiesUnder: 10,
-      rating: 4.5,
-      officeAddress: "123 Main Office, NY",
-      description: "Experienced agent with 10 years in real estate.",
-      picture: require("./images/agent3.jpg"),
-    },
-    {
-      id: 2,
-      name: "Sarah Parker",
-      phone: "987-654-3210",
-      email: "sarah.parker@example.com",
-      propertiesSold: 15,
-      propertiesUnder: 8,
-      rating: 4.7,
-      officeAddress: "456 Maple Office, LA",
-      description: "Specialist in luxury properties.",
-      picture: require("./images/agent2.jpg"),
-    },
-  ]);
-
+  const [agents, setAgents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentAgent, setCurrentAgent] = useState({});
   const [errors, setErrors] = useState({});
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch agents on component mount
+  useEffect(() => {
+    fetchAgents();
+  }, []);
+
+  // Fetch all agents from API
+  const fetchAgents = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/agents");
+      setAgents(response.data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to fetch agents: " + (err.response?.data?.message || err.message));
+      console.error("Error fetching agents:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Validate form input
   const validate = (agent) => {
     const newErrors = {};
     if (!agent.name) newErrors.name = "Name is required";
     if (!agent.phone) newErrors.phone = "Phone is required";
     if (!agent.email || !/\S+@\S+\.\S+/.test(agent.email))
       newErrors.email = "Valid email is required";
-    if (!editMode && !imageFile) newErrors.picture = "Picture is required";
+    if (!editMode && !imageFile && !agent.picture) newErrors.picture = "Picture is required";
     return newErrors;
   };
 
-  const handleSubmit = () => {
+  // Handle form submission (create or update agent)
+  const handleSubmit = async () => {
     const validationErrors = validate(currentAgent);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    const agentData = {
-      ...currentAgent,
-      picture: imageFile ? URL.createObjectURL(imageFile) : currentAgent.picture,
-    };
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      Object.keys(currentAgent).forEach(key => {
+        if (key !== "picture" || typeof currentAgent[key] !== "string") {
+          formData.append(key, currentAgent[key]);
+        }
+      });
+      
+      if (imageFile) {
+        formData.append("picture", imageFile);
+      }
 
-    if (editMode) {
-      setAgents(agents.map((a) => (a.id === currentAgent.id ? agentData : a)));
-    } else {
-      setAgents([...agents, { ...agentData, id: agents.length + 1 }]);
+      let response;
+      if (editMode) {
+        response = await axios.put(`/api/agents/${currentAgent._id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      } else {
+        response = await axios.post("/api/agents", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+      }
+
+      // Refresh agents list after successful operation
+      fetchAgents();
+      
+      // Close modal and reset form
+      resetForm();
+    } catch (err) {
+      setError("Error saving agent: " + (err.response?.data?.message || err.message));
+      console.error("Error saving agent:", err);
     }
+  };
 
+  // Delete an agent
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this agent?")) {
+      try {
+        await axios.delete(`/api/agents/${id}`);
+        fetchAgents();
+      } catch (err) {
+        setError("Error deleting agent: " + (err.response?.data?.message || err.message));
+        console.error("Error deleting agent:", err);
+      }
+    }
+  };
+
+  // Reset form and close modal
+  const resetForm = () => {
     setShowModal(false);
     setCurrentAgent({});
     setImageFile(null);
     setImagePreview("");
     setErrors({});
+    setError(null);
+  };
+
+  // Get the complete image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/images/default-agent.jpg";
+    
+    // If it's a complete URL, return it
+    if (imagePath.startsWith("http")) return imagePath;
+    
+    // Otherwise, it's a relative path
+    return imagePath;
   };
 
   return (
     <div className="container-fluid mt-5">
       <h2 className="text-center mb-4">Agent Management</h2>
+      
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+          <button 
+            type="button" 
+            className="btn-close float-end" 
+            onClick={() => setError(null)}
+            aria-label="Close"
+          ></button>
+        </div>
+      )}
+      
       <div className="row mb-3">
         <div className="col-12 col-md-4 offset-md-8 d-flex justify-content-end">
           <button
@@ -92,59 +155,73 @@ const Agents = () => {
         </div>
       </div>
 
-      <div className="table-responsive">
-        <table className="table table-hover table-bordered">
-          <thead className="table-dark">
-            <tr>
-              <th>Id</th>
-              <th>Picture</th>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {agents.map((agent, index) => (
-              <tr key={agent.id}>
-                <td>{index + 1}</td>
-                <td>
-                  <img
-                    src={agent.picture}
-                    alt={agent.name}
-                    className="rounded-circle"
-                    style={{ width: "50px", height: "50px", objectFit: "cover" }}
-                  />
-                </td>
-                <td>{agent.name}</td>
-                <td>{agent.phone}</td>
-                <td>{agent.email}</td>
-                <td>
-                  <button
-                    className="btn btn-warning btn-sm me-1"
-                    onClick={() => {
-                      setEditMode(true);
-                      setCurrentAgent(agent);
-                      setImagePreview(agent.picture);
-                      setShowModal(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() =>
-                      setAgents(agents.filter((a) => a.id !== agent.id))
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : agents.length === 0 ? (
+        <div className="alert alert-info">No agents found. Add your first agent!</div>
+      ) : (
+        <div className="table-responsive">
+          <table className="table table-hover table-bordered">
+            <thead className="table-dark">
+              <tr>
+                <th>Id</th>
+                <th>Picture</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Properties Sold</th>
+                <th>Properties Under</th>
+                <th>Rating</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {agents.map((agent, index) => (
+                <tr key={agent._id}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <img
+                      src={getImageUrl(agent.picture)}
+                      alt={agent.name}
+                      className="rounded-circle"
+                      style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                    />
+                  </td>
+                  <td>{agent.name}</td>
+                  <td>{agent.phone}</td>
+                  <td>{agent.email}</td>
+                  <td>{agent.propertiesSold}</td>
+                  <td>{agent.propertiesUnder}</td>
+                  <td>{agent.rating} / 5</td>
+                  <td>
+                    <button
+                      className="btn btn-warning btn-sm me-1"
+                      onClick={() => {
+                        setEditMode(true);
+                        setCurrentAgent(agent);
+                        setImagePreview(getImageUrl(agent.picture));
+                        setShowModal(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(agent._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {showModal && (
         <div className="modal show fade d-block" tabIndex="-1">
@@ -156,15 +233,16 @@ const Agents = () => {
                 </h5>
                 <button
                   className="btn-close"
-                  onClick={() => setShowModal(false)}
+                  onClick={resetForm}
                 ></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
+                  <label className="form-label">Name</label>
                   <input
                     type="text"
-                    className="form-control"
-                    placeholder="Name"
+                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                    placeholder="Full Name"
                     value={currentAgent.name || ""}
                     onChange={(e) =>
                       setCurrentAgent({
@@ -173,13 +251,14 @@ const Agents = () => {
                       })
                     }
                   />
-                  {errors.name && <div className="text-danger">{errors.name}</div>}
+                  {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                 </div>
                 <div className="mb-3">
+                  <label className="form-label">Phone</label>
                   <input
                     type="text"
-                    className="form-control"
-                    placeholder="Phone"
+                    className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+                    placeholder="Phone Number"
                     value={currentAgent.phone || ""}
                     onChange={(e) =>
                       setCurrentAgent({
@@ -189,14 +268,15 @@ const Agents = () => {
                     }
                   />
                   {errors.phone && (
-                    <div className="text-danger">{errors.phone}</div>
+                    <div className="invalid-feedback">{errors.phone}</div>
                   )}
                 </div>
                 <div className="mb-3">
+                  <label className="form-label">Email</label>
                   <input
                     type="email"
-                    className="form-control"
-                    placeholder="Email"
+                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                    placeholder="Email Address"
                     value={currentAgent.email || ""}
                     onChange={(e) =>
                       setCurrentAgent({
@@ -206,14 +286,94 @@ const Agents = () => {
                     }
                   />
                   {errors.email && (
-                    <div className="text-danger">{errors.email}</div>
+                    <div className="invalid-feedback">{errors.email}</div>
                   )}
                 </div>
+                <div className="row">
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label">Properties Sold</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="0"
+                      value={currentAgent.propertiesSold || 0}
+                      onChange={(e) =>
+                        setCurrentAgent({
+                          ...currentAgent,
+                          propertiesSold: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label">Properties Under Contract</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="0"
+                      value={currentAgent.propertiesUnder || 0}
+                      onChange={(e) =>
+                        setCurrentAgent({
+                          ...currentAgent,
+                          propertiesUnder: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label className="form-label">Rating (0-5)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      className="form-control"
+                      placeholder="0.0"
+                      value={currentAgent.rating || 0}
+                      onChange={(e) =>
+                        setCurrentAgent({
+                          ...currentAgent,
+                          rating: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
                 <div className="mb-3">
-                  <label>Upload Picture:</label>
+                  <label className="form-label">Office Address</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Office Address"
+                    value={currentAgent.officeAddress || ""}
+                    onChange={(e) =>
+                      setCurrentAgent({
+                        ...currentAgent,
+                        officeAddress: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Description</label>
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    placeholder="Agent Description"
+                    value={currentAgent.description || ""}
+                    onChange={(e) =>
+                      setCurrentAgent({
+                        ...currentAgent,
+                        description: e.target.value,
+                      })
+                    }
+                  ></textarea>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Upload Picture</label>
                   <input
                     type="file"
-                    className="form-control"
+                    className={`form-control ${errors.picture ? 'is-invalid' : ''}`}
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file) {
@@ -223,23 +383,27 @@ const Agents = () => {
                     }}
                   />
                   {errors.picture && (
-                    <div className="text-danger">{errors.picture}</div>
+                    <div className="invalid-feedback">{errors.picture}</div>
                   )}
                 </div>
                 {imagePreview && (
                   <div className="mb-3">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="img-fluid rounded"
-                    />
+                    <label className="form-label">Image Preview</label>
+                    <div className="text-center">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="img-fluid rounded"
+                        style={{ maxHeight: "200px" }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
               <div className="modal-footer">
                 <button
                   className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
+                  onClick={resetForm}
                 >
                   Cancel
                 </button>

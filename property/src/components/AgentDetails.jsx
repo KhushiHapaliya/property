@@ -1,13 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card } from "react-bootstrap";
-import { agents } from "./AllAgents";
+import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaStar, FaRegStar } from "react-icons/fa";
+import axios from "axios";
 
 const AgentDetails = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [agent, setAgent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "", review: "", rating: 0 });
   const [errors, setErrors] = useState({});
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchAgent = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`http://localhost:5000/api/agents/${id}`);
+        setAgent(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching agent:", err);
+        setError("Failed to fetch agent details. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgent();
+  }, [id]);
 
   // Validation function
   const validate = () => {
@@ -29,17 +52,76 @@ const AgentDetails = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      alert("Review submitted successfully!");
-      setFormData({ name: "", email: "", review: "", rating: 0 });
+      // For now, just simulate a successful submission
+      setSubmitStatus("success");
+      setTimeout(() => {
+        setSubmitStatus(null);
+        setFormData({ name: "", email: "", review: "", rating: 0 });
+      }, 3000);
     }
   };
 
-  const { id } = useParams();
-  const agent = agents.find((a) => a.id === parseInt(id));
+  if (loading) {
+    return (
+      <Container className="text-center my-5">
+        <Spinner animation="border" role="status" variant="primary">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="text-center my-5">
+        <div className="alert alert-danger">{error}</div>
+        <div className="mt-3">
+          <Button 
+            variant="primary" 
+            className="me-2"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </Button>
+          <Button 
+            variant="secondary"
+            onClick={() => navigate('/agents')}
+          >
+            Back to Agents
+          </Button>
+        </div>
+      </Container>
+    );
+  }
 
   if (!agent) {
-    return <h2 className="text-center text-danger mt-5">Agent Not Found</h2>;
+    return (
+      <Container className="text-center my-5">
+        <h2 className="text-danger">Agent Not Found</h2>
+        <button 
+          className="btn btn-primary mt-3"
+          onClick={() => navigate('/agents')}
+        >
+          Back to Agents
+        </button>
+      </Container>
+    );
   }
+
+  const renderStars = (count) => {
+    const rating = Math.round(count);
+    return (
+      <>
+        {[...Array(5)].map((_, index) => (
+          index < rating ? (
+            <FaStar key={index} style={{ color: "#003f3f", fontSize: "28px" }} />
+          ) : (
+            <FaRegStar key={index} style={{ color: "#003f3f", fontSize: "28px" }} />
+          )
+        ))}
+      </>
+    );
+  };
 
   return (
     <Container className="py-5">
@@ -50,35 +132,36 @@ const AgentDetails = () => {
               {/* Left Side: Agent Image and Star Rating */}
               <Col md={5} className="text-center">
                 <img
-                  src={agent.image}
+                  src={agent.picture.startsWith("http") ? agent.picture : `http://localhost:5000${agent.picture}`}
                   alt={agent.name}
                   className="rounded-circle img-fluid"
                   style={{ width: "250px", height: "250px", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/images/default-agent.jpg";
+                  }}
                 />
-                {/* Star Rating (4 filled, 1 outlined) */}
+                {/* Star Rating */}
                 <div className="mt-3">
-                  {[...Array(4)].map((_, index) => (
-                    <FaStar key={index} style={{ color: "#003f3f", fontSize: "28px" }} />
-                  ))}
-                  <FaRegStar style={{ color: "#003f3f", fontSize: "28px" }} />
+                  {renderStars(agent.rating)}
                 </div>
               </Col>
 
               {/* Right Side: Agent Details */}
               <Col md={7}>
                 <h2 className="fw-bold">{agent.name}</h2>
-                <h5 className="text-muted">{agent.role}</h5>
+                <h5 className="text-muted">{agent.description || "Real Estate Agent"}</h5>
                 <p className="text-secondary mt-3">
-                  {agent.name} is a highly experienced {agent.role} specializing in helping clients
-                  find their perfect properties. With years of expertise, {agent.name} ensures smooth
-                  and hassle-free transactions.
+                  {agent.name} is a highly experienced real estate professional with 
+                  {agent.propertiesSold ? ` ${agent.propertiesSold} properties sold` : " several years of experience"}.
+                  Currently working with {agent.propertiesUnder || 0} active listings.
                 </p>
 
                 {/* Contact Details */}
                 <div className="mt-4">
-                  <p><FaPhone className="me-2 text-success" /> +1 (123) 456-7890</p>
-                  <p><FaEnvelope className="me-2 text-primary" /> {agent.name.toLowerCase().replace(" ", ".")}@realestate.com</p>
-                  <p><FaMapMarkerAlt className="me-2 text-danger" /> 123 Main Street, New York, USA</p>
+                  <p><FaPhone className="me-2 text-success" /> {agent.phone}</p>
+                  <p><FaEnvelope className="me-2 text-primary" /> {agent.email}</p>
+                  <p><FaMapMarkerAlt className="me-2 text-danger" /> {agent.officeAddress || "123 Main Street, New York, USA"}</p>
                 </div>
               </Col>
             </Row>
@@ -91,42 +174,50 @@ const AgentDetails = () => {
         <Col lg={8}>
           <Card className="p-4">
             <h4>Leave a Review</h4>
+            {submitStatus === "success" && (
+              <div className="alert alert-success">Review submitted successfully!</div>
+            )}
             <form onSubmit={handleSubmit}>
               <Row className="mb-3">
-                <Col md={4}>
+                <Col md={6} className="mb-3">
+                  <label htmlFor="name" className="form-label">Your Name</label>
                   <input
+                    id="name"
                     type="text"
-                    className="form-control"
-                    placeholder="Your Name"
+                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
-                  {errors.name && <small className="text-danger">{errors.name}</small>}
+                  {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                 </Col>
-                <Col md={4}>
+                <Col md={6} className="mb-3">
+                  <label htmlFor="email" className="form-label">Your Email</label>
                   <input
+                    id="email"
                     type="email"
-                    className="form-control"
-                    placeholder="Your Email"
+                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
-                  {errors.email && <small className="text-danger">{errors.email}</small>}
-                </Col>
-                <Col md={4}>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Your Review"
-                    value={formData.review}
-                    onChange={(e) => setFormData({ ...formData, review: e.target.value })}
-                  />
-                  {errors.review && <small className="text-danger">{errors.review}</small>}
+                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                 </Col>
               </Row>
 
+              <div className="mb-3">
+                <label htmlFor="review" className="form-label">Your Review</label>
+                <textarea
+                  id="review"
+                  className={`form-control ${errors.review ? 'is-invalid' : ''}`}
+                  rows="3"
+                  value={formData.review}
+                  onChange={(e) => setFormData({ ...formData, review: e.target.value })}
+                ></textarea>
+                {errors.review && <div className="invalid-feedback">{errors.review}</div>}
+              </div>
+
               {/* Rating Selection */}
               <div className="mb-3">
+                <label className="form-label d-block">Rating</label>
                 {[...Array(5)].map((_, index) => (
                   <FaStar
                     key={index}
@@ -135,15 +226,16 @@ const AgentDetails = () => {
                       cursor: "pointer",
                       color: index < formData.rating ? "#003f3f" : "#ccc",
                       fontSize: "28px",
+                      marginRight: "5px"
                     }}
                   />
                 ))}
-                {errors.rating && <small className="text-danger d-block">{errors.rating}</small>}
+                {errors.rating && <div className="text-danger mt-1">{errors.rating}</div>}
               </div>
 
               {/* Submit Button */}
               <button type="submit" className="btn text-white" style={{ backgroundColor: "#003f3f" }}>
-                Submit
+                Submit Review
               </button>
             </form>
           </Card>

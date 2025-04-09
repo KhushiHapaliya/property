@@ -1,23 +1,34 @@
-import React from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import agent1 from "./images/agent1.jpg";
-import agent2 from "./images/agent2.jpg";
-import agent3 from "./images/agent3.jpg";
-import house2 from "./images/house2.jpg"; // ✅ Ensure this is correctly imported
-
-export const agents = [
-  { id: 1, name: "James Doe", role: "Real Estate Agent", image: agent1 },
-  { id: 2, name: "Jean Smith", role: "Real Estate Agent", image: agent2 },
-  { id: 3, name: "Alicia Huston", role: "Real Estate Agent", image: agent3 },
-  { id: 4, name: "Michael Brown", role: "Senior Agent", image: agent1 },
-  { id: 5, name: "Sophia Wilson", role: "Luxury Property Specialist", image: agent2 },
-  { id: 6, name: "Robert Johnson", role: "Commercial Property Expert", image: agent3 },
-];
+import axios from "axios";
+import house2 from "./images/house2.jpg";
 
 const AllAgents = () => {
   const navigate = useNavigate();
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        setLoading(true);
+        // Make sure we're using the correct API endpoint
+        const response = await axios.get("http://localhost:5000/api/agents");
+        setAgents(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching agents:", err);
+        setError("Failed to fetch agents. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgents();
+  }, []);
 
   return (
     <>
@@ -41,42 +52,71 @@ const AllAgents = () => {
       {/* Agents List */}
       <Container className="py-5">
         <h2 className="text-center mb-4">Meet Our Agents</h2>
-        <Row>
-          {agents.map((agent) => (
-            <Col md={4} sm={6} xs={12} className="mb-4" key={agent.id}>
-              <Card className="text-center border-0 shadow-sm p-3">
-                <div className="d-flex justify-content-center">
-                  <img
-                    src={agent.image}
-                    alt={agent.name}
-                    className="rounded-circle img-fluid"
-                    style={{ width: "120px", height: "120px", objectFit: "cover" }}
-                  />
-                </div>
-                <Card.Body>
-                  <Card.Title className="fw-bold">{agent.name}</Card.Title>
-                  <Card.Subtitle className="text-muted">{agent.role}</Card.Subtitle>
-                  <Card.Text className="text-secondary">
-                    Passionate about real estate, {agent.name} ensures the best deals for clients.
-                  </Card.Text>
-                  <Button
-                    className="w-50 py-2"
-                    style={{ backgroundColor: "#003f3f", color: "white" }}
-                    onClick={() => navigate(`/agentdetails/${agent.id}`)}
-                  >
-                    See details
-                  </Button>
-                  <div className="d-flex justify-content-center gap-3 mt-3">
-                    <a href="#" className="text-dark"><FaTwitter /></a>
-                    <a href="#" className="text-dark"><FaFacebookF /></a>
-                    <a href="#" className="text-dark"><FaLinkedinIn /></a>
-                    <a href="#" className="text-dark"><FaInstagram /></a>
+        
+        {loading ? (
+          <div className="text-center my-5">
+            <Spinner animation="border" role="status" variant="primary">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        ) : error ? (
+          <div className="alert alert-danger text-center">
+            {error}
+            <div className="mt-3">
+              <Button 
+                variant="primary" 
+                onClick={() => window.location.reload()}
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
+        ) : agents.length === 0 ? (
+          <div className="alert alert-info text-center">No agents found</div>
+        ) : (
+          <Row>
+            {agents.map((agent) => (
+              <Col md={4} sm={6} xs={12} className="mb-4" key={agent._id}>
+                <Card className="text-center border-0 shadow-sm p-3">
+                  <div className="d-flex justify-content-center">
+                    <img
+                      src={agent.picture.startsWith("http") ? agent.picture : `http://localhost:5000${agent.picture}`}
+                      alt={agent.name}
+                      className="rounded-circle img-fluid"
+                      style={{ width: "120px", height: "120px", objectFit: "cover" }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/images/default-agent.jpg";
+                      }}
+                    />
                   </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+                  <Card.Body>
+                    <Card.Title className="fw-bold">{agent.name}</Card.Title>
+                    <Card.Subtitle className="text-muted">
+                      {agent.description || "Real Estate Agent"}
+                    </Card.Subtitle>
+                    <Card.Text className="text-secondary">
+                      Properties Sold: {agent.propertiesSold || 0} | Rating: {agent.rating || 0}/5
+                    </Card.Text>
+                    <Button
+                      className="w-50 py-2"
+                      style={{ backgroundColor: "#003f3f", color: "white" }}
+                      onClick={() => navigate(`/agentdetails/${agent._id}`)}
+                    >
+                      See details
+                    </Button>
+                    <div className="d-flex justify-content-center gap-3 mt-3">
+                      <a href="#" className="text-dark"><FaTwitter /></a>
+                      <a href="#" className="text-dark"><FaFacebookF /></a>
+                      <a href="#" className="text-dark"><FaLinkedinIn /></a>
+                      <a href="#" className="text-dark"><FaInstagram /></a>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
       </Container>
     </>
   );
